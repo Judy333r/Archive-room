@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>غرفة الهروب الرقمية: ملف مفقود من الأرشيف</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1020;--navy:#141b34;--gold:#d4af37;--beige:#e8dcc0;--ok:#3fa66b;--bad:#c0504d}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:Tajawal,Cairo,Tahoma,sans-serif;background:var(--bg);color:var(--beige);overflow:hidden;line-height:1.7}
+.gold{color:var(--gold)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;opacity:0;transition:opacity .5s;overflow:auto}
+.screen.on{display:flex;opacity:1}
+#home{background:url(assets/hero.jpg) center/cover,radial-gradient(circle at 50% 30%,#223060,#0b1020 70%)}
+#home::before{content:"";position:absolute;inset:0;background:rgba(8,12,28,.72)}
+#home>*,#story>*{position:relative}
+#home h1{font-size:clamp(2rem,7vw,3.6rem);color:var(--gold);text-shadow:0 0 25px #d4af3766}
+#home h2{font-size:clamp(1.2rem,4vw,1.8rem)}
+.reels{font-size:2.2rem;letter-spacing:10px;margin-bottom:10px;animation:fl 4s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-8px)}}
+.lead{max-width:640px;margin:18px 0 26px;font-size:1.1rem}
+.btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.btn{font:inherit;font-weight:700;padding:12px 24px;border-radius:14px;border:1px solid var(--gold);background:#1b2547;color:var(--beige);cursor:pointer;min-height:46px;transition:.2s}
+.btn:hover,.btn:focus-visible{background:#26336a;transform:translateY(-2px);outline:2px solid var(--gold)}
+.btn.main{background:var(--gold);color:#16120a}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+#story{background:radial-gradient(circle,#18224a,#070a16)}
+.terminal{max-width:640px;background:#0a1226ee;border:1px solid var(--gold);border-radius:18px;padding:26px;text-align:right;box-shadow:0 0 40px #d4af3733}
+.terminal p{margin-bottom:12px;font-size:1.1rem}
+.terminal .btn{margin-top:8px}
+#game{padding:0;justify-content:flex-start;overflow:hidden}
+#stage{position:absolute;inset:0;touch-action:none;cursor:grab}
+#stage canvas{display:block;width:100%;height:100%}
+#tip{position:absolute;pointer-events:none;background:#0b1020e6;border:1px solid var(--gold);padding:4px 12px;border-radius:10px;font-size:.9rem;transform:translate(-50%,-140%);white-space:nowrap}
+#obj{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#0b1020e6;border:1px solid #d4af3766;padding:8px 16px;border-radius:14px;max-width:92vw;text-align:center;font-size:.95rem}
+#hud{position:absolute;top:10px;right:10px;width:210px;background:#0b1020e0;border:1px solid #d4af3766;border-radius:14px;padding:10px 12px;font-size:.85rem;text-align:right}
+#hud .row{display:flex;justify-content:space-between;margin:2px 0}
+.track{height:8px;background:#222c52;border-radius:6px;margin:6px 0;overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#b8922a,#f0d77a);transition:width .6s}
+#stages{list-style:none;padding:0;margin:6px 0}
+#stages li{opacity:.55}
+#stages li.cur{opacity:1;color:var(--gold);font-weight:700}
+#stages li.done{opacity:1;color:#7fd6a0}
+.tools{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:8px}
+.ic{width:44px;height:44px;border-radius:12px;border:1px solid var(--gold);background:#0b1020e0;font-size:1.2rem;cursor:pointer;color:inherit}
+.ic:hover,.ic:focus-visible{background:#26336a}
+#itemList{position:absolute;top:10px;left:64px;background:#0b1020f0;border:1px solid var(--gold);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;max-height:80vh;overflow:auto}
+#itemList[hidden],#tip[hidden]{display:none}
+#itemList button{font:inherit;background:#1b2547;color:inherit;border:1px solid #d4af3755;border-radius:8px;padding:6px 12px;cursor:pointer;text-align:right}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:14px;z-index:10}
+#modal.on{display:flex;animation:fi .25s}
+@keyframes fi{from{opacity:0}}
+.card{position:relative;background:linear-gradient(160deg,#17224a,#0d1330);border:1px solid var(--gold);border-radius:20px;padding:24px;max-width:560px;width:100%;max-height:90vh;overflow:auto;text-align:right;box-shadow:0 10px 50px #000a}
+.x{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;border:1px solid var(--gold);background:none;color:var(--beige);cursor:pointer;font-size:1rem}
+.card h3{color:var(--gold);margin-bottom:8px;font-size:1.4rem}
+.card p{margin:8px 0}
+.card ol{padding-right:22px}
+.pic{position:relative;height:150px;border-radius:12px;background:#0a1026;display:flex;align-items:center;justify-content:center;font-size:4rem;overflow:hidden;margin-bottom:10px}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.opts{display:grid;gap:10px;margin:14px 0}
+.opt{font:inherit;padding:12px;border-radius:12px;border:1px solid #d4af3788;background:#1b2547;color:var(--beige);cursor:pointer;text-align:right;min-height:46px}
+.opt:hover:not(:disabled){background:#26336a}
+.opt.good{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong{background:var(--bad);color:#fff;animation:sh .3s}
+@keyframes sh{25%{transform:translateX(6px)}75%{transform:translateX(-6px)}}
+.msg{padding:10px 12px;border-radius:10px;margin:8px 0}
+.msg.ok{background:#3fa66b33;border:1px solid var(--ok)}
+.msg.bad{background:#c0504d33;border:1px solid var(--bad)}
+.msg.hint{background:#d4af3722;border:1px solid #d4af3766}
+.dg{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;margin:10px 0}
+.dg i{aspect-ratio:1;background:#16204a;animation:dg .5s forwards}
+@keyframes dg{to{background:#7fe0ff;box-shadow:0 0 6px #7fe0ff}}
+#win{background:radial-gradient(circle,#3a2d0a,#0b1020 70%)}
+#win h1{color:var(--gold);font-size:clamp(1.8rem,6vw,3rem);text-shadow:0 0 30px #d4af37}
+.file{border:2px solid var(--gold);border-radius:16px;padding:16px 22px;margin:16px 0;background:#0d1330;box-shadow:0 0 40px #d4af3755;text-align:right;max-width:460px}
+.edu{max-width:560px;margin:8px 0 16px}
+.c{position:fixed;top:-20px;width:10px;height:14px;pointer-events:none;z-index:20;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(max-width:600px){#hud{width:150px;font-size:.72rem;padding:6px 8px}#stages li{font-size:.7rem}.card{padding:18px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+
+<section id="home" class="screen on">
+  <div class="reels" aria-hidden="true">📼 🎞️ 📸 🎧 🗂️ 💻</div>
+  <h2 class="gold">غرفة الهروب الرقمية</h2>
+  <h1>ملف مفقود من الأرشيف</h1>
+  <p class="lead">«اختفى ملف يحمل ذكريات من الماضي، وأنتِ المحققة الوحيدة القادرة على استعادته. استكشفي الأرشيف، واجمعي الأدلة، وحلّي الألغاز قبل أن تضيع الذكريات إلى الأبد!»</p>
+  <div class="btns">
+    <button class="btn main" id="bStart">ابدئي المهمة</button>
+    <button class="btn" id="bHelp">تعليمات اللعب</button>
+    <button class="btn" id="bAbout">عن المناسبة</button>
+  </div>
+</section>
+
+<section id="story" class="screen">
+  <div class="terminal">
+    <p><b>تنبيه:</b> تم اكتشاف فقدان ملف تراثي من الأرشيف المركزي.</p>
+    <p>يحتوي الملف على صور تاريخية وتسجيلات صوتية وأفلام تحفظ ذكريات من الماضي.</p>
+    <p>انقطع الاتصال بالخزنة، واختفت مفاتيح الوصول، ولم يتبقَّ سوى آثار صغيرة داخل غرفة الأرشيف.</p>
+    <p>مهمتكِ هي البحث عن الأدلة، وفك الرموز، واستعادة الملف قبل أن تضيع الذكريات إلى الأبد.</p>
+    <p class="gold">هل أنتِ مستعدة لبدء التحقيق؟</p>
+    <button class="btn main" id="bEnter">دخول غرفة الأرشيف</button>
+  </div>
+</section>
+
+<section id="game" class="screen">
+  <div id="stage"></div>
+  <div id="tip" hidden></div>
+  <div id="obj"></div>
+  <aside id="hud">
+    <div class="row"><span>النقاط</span><b id="pts">0/5</b></div>
+    <div class="row"><span>الأدلة</span><b id="clues">0/9</b></div>
+    <div class="track"><div id="bar"></div></div>
+    <ul id="stages"></ul>
+    <div class="row"><span>الملف المفقود</span><b id="file">مفقود ❌</b></div>
+  </aside>
+  <div class="tools">
+    <button class="ic" id="bItems" title="قائمة العناصر" aria-label="قائمة العناصر">🔍</button>
+    <button class="ic" id="bMute" title="كتم الصوت" aria-label="كتم الصوت">🔊</button>
+    <button class="ic" id="bReset" title="إعادة اللعبة" aria-label="إعادة اللعبة">🔄</button>
+    <button class="ic" id="bHome" title="الصفحة الرئيسية" aria-label="الصفحة الرئيسية">🏠</button>
+  </div>
+  <div id="itemList" hidden></div>
+</section>
+
+<section id="win" class="screen"></section>
+
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="card"><button class="x" id="bClose" aria-label="إغلاق">✕</button><div id="mbody"></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+/* غرفة الهروب الرقمية: ملف مفقود من الأرشيف — JS خالص + Three.js */
+const KEY = 'avEscapeRoom.v1';
+const $ = s => document.querySelector(s);
+
+/* ---------- المراحل (الإجابة الصحيحة دائمًا أول خيار ثم تُخلط) ---------- */
+const Q = [
+  { id: 'cassette', t: 'الصوت المفقود 🎧', s: 'عثرتِ على تسجيل قديم، لكنك تحتاجين إلى معرفة الجهاز الذي استُخدم لتشغيله.',
+    q: 'ما الجهاز الذي استُخدم قديمًا لتشغيل الأشرطة الصوتية؟', o: ['جهاز الكاسيت', 'الطابعة', 'الماسح الضوئي', 'جهاز العرض'],
+    h: 'جهاز صغير فيه بكرتان تدوران عند التشغيل.', ok: 'أحسنتِ! لقد اكتشفتِ أول دليل في الأرشيف.',
+    f: 'تحفظ الأشرطة الصوتية الأصوات والمقابلات والموسيقى، وهي جزء مهم من ذاكرة المجتمعات.' },
+  { id: 'photo', t: 'الصورة الغامضة 📸', s: 'وجدتِ صورة تاريخية، لكنك تحتاجين إلى تحديد نوع المصدر الذي يساعدنا على توثيق الماضي.',
+    q: 'أيّ مما يلي يُعد مصدرًا سمعيًا بصريًا يمكنه توثيق أحداث الماضي؟', o: ['صورة فوتوغرافية قديمة', 'آلة حاسبة', 'جدول حسابي', 'لوحة مفاتيح'],
+    h: 'ابحثي عن شيء يلتقط مشهدًا حقيقيًا من الماضي.', ok: 'رائع! لقد اكتشفتِ دليلًا جديدًا يساعد على استعادة الذكريات.',
+    f: 'تحفظ الصور ذكريات الأشخاص والأماكن والأحداث، وتنقل لنا شكل الماضي كما كان.' },
+  { id: 'computer', t: 'المفتاح الرقمي 💻', s: 'عثرتِ على تسجيل محفوظ على وسيط قديم، وتريدين تحويله إلى ملف يسهل حفظه والوصول إليه إلكترونيًا.',
+    q: 'ما العملية التي تحوّل المواد القديمة إلى ملفات رقمية؟', o: ['الرقمنة', 'الطباعة', 'الحذف', 'النسخ الورقي'],
+    h: 'الكلمة مشتقة من «الرقم» أو «الرقمي».', ok: 'ممتاز! لقد فتحتِ المسار الرقمي، وأصبح الملف أقرب إلى الاستعادة.',
+    f: 'الرقمنة تحمي المواد الهشة من التلف، وتسهّل نسخها ومشاركتها مع الأجيال القادمة.' },
+  { id: 'cabinet', t: 'الكنز المحفوظ 🗂️', s: 'وصلتِ إلى المكان الذي تُحفظ فيه الوثائق والصور والتسجيلات التاريخية، لكن عليكِ تحديد اسمه قبل فتح الدرج السري.',
+    q: 'ما اسم المكان الذي تُجمع فيه المواد التاريخية وتُنظّم لتسهيل حفظها والرجوع إليها؟', o: ['الأرشيف', 'المختبر', 'المكتبة الإلكترونية للألعاب', 'غرفة الاجتماعات'],
+    h: 'أنتِ تقفين داخله الآن!', ok: 'أحسنتِ! لقد عثرتِ على المفتاح الأخير، ولم يتبقَّ سوى الرمز النهائي.',
+    f: 'ينظّم الأرشيف الوثائق والمواد ويصنّفها ويحميها ليسهل الرجوع إليها عند الحاجة.' },
+  { id: 'reel', t: 'الرمز الأخير 🔐', s: 'وصلتِ إلى الخزنة التي تحتوي على الملف المفقود. بقي سؤال أخير لفتحها واستعادة الذكريات.',
+    q: 'في أي تاريخ يُحتفى باليوم العالمي للتراث السمعي البصري؟', o: ['27 أكتوبر', '5 أكتوبر', '16 أكتوبر', '31 أكتوبر'],
+    h: 'لوحة الرموز على الجدار وساعة الغرفة تلمّحان إلى الرقم.', ok: 'رائع! لقد فككتِ الرمز الأخير. أصبحت الخزنة جاهزة للفتح!',
+    f: 'يُحتفى بهذا اليوم كل عام في 27 أكتوبر للتذكير بأهمية حفظ الأفلام والتسجيلات والصور.' }
+];
+const OBJ = [
+  'ابحثي عن جهاز يشغّل الأشرطة الصوتية، قريبًا من المصباح على الطاولة.',
+  'علّقت ذكرى قديمة على أحد الجدران… ابحثي عن إطار.',
+  'شيء يضيء بخفوت في زاوية الغرفة، وفيه ملفات رقمية.',
+  'خزانة معدنية تحفظ الأوراق، ابحثي عن أدراجها.',
+  'بكرة فيلم تنتظر على رف قرب الجدار. ابحثي عنها.'
+];
+
+/* ---------- عناصر الغرفة ---------- */
+const I = {
+  cassette: { n: 'جهاز تسجيل الكاسيت', e: '📼', s: 0, d: 'جهاز قديم يسجّل ويشغّل الأشرطة الصوتية المغناطيسية.', f: Q[0].f },
+  photo: { n: 'صورة تاريخية', e: '📸', s: 1, d: 'صورة بالأبيض والأسود التقطت قبل عقود لمكان وأشخاص.', f: Q[1].f },
+  computer: { n: 'الحاسوب والملفات الرقمية', e: '💻', s: 2, d: 'شاشته تعرض صورًا وتسجيلات تمت رقمنتها.', f: Q[2].f },
+  cabinet: { n: 'خزانة الأرشيف', e: '🗂️', s: 3, d: 'أدراج معدنية فيها وثائق وملصقات قديمة مرتبة.', f: Q[3].f },
+  reel: { n: 'بكرة الفيلم السينمائي', e: '🎞️', s: 4, d: 'بكرة فيلم قديمة، كانت الأفلام تُحفظ على شرائط من هذا النوع.', f: 'الأفلام القديمة سجل حي للحياة والفنون والأحداث، وتحتاج إلى حفظ وترميم خاص حتى لا تتلف.' },
+  safe: { n: 'الخزنة الرقمية', e: '🔐', d: 'خزنة مقفلة يظهر عليها لوح أرقام. لن تُفتح قبل حل اللغز الأخير.', f: 'ابدئي بالأدلة الخمسة بالترتيب، وستفتحين الخزنة في النهاية.' },
+  lamp: { n: 'مصباح المكتب القديم', e: '💡', d: 'يضيء الطاولة بضوء ذهبي دافئ.', f: 'تلميح: الأدلة تُكتشف بالترتيب، وأول دليل صوتي على الطاولة قرب هذا المصباح.' },
+  clock: { n: 'ساعة الحائط', e: '🕙', d: 'الساعة متوقفة عند 10:27.', f: 'تلميح: الشهر العاشر واليوم السابع والعشرون… رقمان يستحقان الانتباه.' },
+  papers: { n: 'أوراق مبعثرة', e: '📄', d: 'أوراق تحمل أسماء ملفات وتواريخ وتصنيفات.', f: 'يعتمد الأرشيف على الترقيم والتصنيف حتى يسهل العثور على أي وثيقة.' },
+  board: { n: 'لوحة الرموز', e: '🔢', d: 'لوحة عليها رمز غامض: AV-1027.', f: 'تلميح: AV اختصار «سمعي بصري»، و1027 قد يكون تاريخًا: 27/10.' }
+};
+const N_ITEMS = Object.keys(I).length;
+const ART = { 'cassette': 'assets/cassette.jpg', 'photo': 'assets/photo.jpg', 'computer': 'assets/computer.jpg', 'cabinet': 'assets/cabinet.jpg', 'reel': 'assets/reel.jpg' };
+
+/* ---------- الحالة والحفظ ---------- */
+let S = load();
+function load() { try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && typeof x.stage === 'number') return x; } catch (e) {} return { stage: 0, pts: 0, found: [], story: false }; }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+let inRoom = false, vaultPlayed = false;
+
+/* ---------- الصوت (Web Audio) ---------- */
+let ac, mute = false;
+function tone(f, t = .15, ty = 'sine', d = 0) {
+  if (mute) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain(), s = ac.currentTime + d;
+    o.type = ty; o.frequency.value = f;
+    g.gain.setValueAtTime(.001, s); g.gain.exponentialRampToValueAtTime(.12, s + .02); g.gain.exponentialRampToValueAtTime(.001, s + t);
+    o.connect(g); g.connect(ac.destination); o.start(s); o.stop(s + t + .05);
+  } catch (e) {}
+}
+const seq = (a, t, ty, gap) => a.forEach((f, i) => tone(f, t, ty, i * gap));
+const SFX = {
+  click: () => tone(520, .08),
+  find: () => seq([660, 880], .15, 'sine', .1),
+  ok: () => seq([523, 659, 784], .2, 'triangle', .12),
+  bad: () => tone(180, .3, 'sawtooth'),
+  vault: () => seq([200, 300, 400, 600, 800], .25, 'square', .18),
+  win: () => seq([523, 659, 784, 1047, 1319], .3, 'triangle', .15)
+};
+
+/* ---------- الشاشات والنوافذ ---------- */
+function show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); inRoom = id === 'game'; $('#itemList').hidden = true; }
+function modal(h) { $('#mbody').innerHTML = h; $('#modal').classList.add('on'); setTimeout(() => { const b = $('#mbody button'); b && b.focus(); }, 50); }
+function closeM() { $('#modal').classList.remove('on'); if (S.stage >= 5 && !vaultPlayed && inRoom) vault(); }
+const pic = it => `<div class="pic"><span>${it.e}</span>${ART[it.id] ? `<img src="${ART[it.id]}" alt="${it.n}" onerror="this.remove()">` : ''}</div>`;
+
+/* ---------- واجهة التقدم ---------- */
+function hud() {
+  $('#pts').textContent = S.pts + '/5';
+  $('#clues').textContent = S.found.length + '/' + N_ITEMS;
+  $('#bar').style.width = S.pts * 20 + '%';
+  $('#file').textContent = S.stage >= 5 ? 'مستعاد ✅' : 'مفقود ❌';
+  $('#stages').innerHTML = Q.map((q, i) => `<li class="${i < S.stage ? 'done' : i === S.stage ? 'cur' : ''}">${i < S.stage ? '✓' : i === S.stage ? '➤' : '🔒'} ${q.t}</li>`).join('');
+  $('#obj').textContent = S.stage < 5 ? '🔎 ' + OBJ[S.stage] : 'الخزنة جاهزة للفتح!';
+  $('#itemList').innerHTML = Object.keys(I).map(k => `<button data-k="${k}">${S.found.includes(k) ? '✓ ' : ''}${I[k].n}</button>`).join('');
+}
+$('#itemList').addEventListener('click', e => { const k = e.target.dataset.k; if (k) { $('#itemList').hidden = true; onItem(k); } });
+
+/* ---------- منطق العناصر ---------- */
+function mark(id) { if (!S.found.includes(id)) { S.found.push(id); save(); hud(); SFX.find(); } }
+function onItem(id) {
+  if (!id || !I[id]) return;
+  const it = I[id]; it.id = id; SFX.click();
+  if (it.s !== undefined) {
+    if (it.s < S.stage) return info(it, '✓ دليل مكتشف');
+    if (it.s === S.stage) { mark(id); return info(it, '', true); }
+    return info(it, `🔒 هذا ليس الدليل المطلوب الآن. أكملي المرحلة ${S.stage + 1} أولًا.`);
+  }
+  if (id === 'safe') return info(it, S.stage >= 5 ? '✓ الخزنة مفتوحة' : '🔒 مقفلة');
+  mark(id); info(it, '');
+}
+function info(it, note, canPlay) {
+  modal(`${pic(it)}<h3>${it.n}</h3><p>${it.d}</p><p>${it.f || ''}</p>${note ? `<div class="msg hint">${note}</div>` : ''}${canPlay ? '<button class="btn main" id="bPlay">فتح اللغز</button>' : ''}`);
+  const b = $('#bPlay'); if (b) b.onclick = puzzle;
+}
+
+function puzzle() {
+  const n = S.stage; if (n >= 5) return;
+  const q = Q[n], opts = q.o.map((t, i) => ({ t, c: i === 0 })).sort(() => Math.random() - .5);
+  modal(`<h3>${q.t}</h3><p><i>${q.s}</i></p><p><b>${q.q}</b></p><div class="opts">${opts.map((o, i) => `<button class="opt" data-i="${i}">${o.t}</button>`).join('')}</div><button class="btn" id="bHint">💡 تلميح</button><div id="fb"></div>`);
+  let done = false;
+  $('#bHint').onclick = () => { $('#fb').innerHTML = `<div class="msg hint">${q.h}</div>`; };
+  document.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    if (done) return;
+    if (opts[+b.dataset.i].c) {
+      done = true; S.pts++; S.stage++; save(); hud(); SFX.ok();
+      document.querySelectorAll('.opt').forEach(x => x.disabled = true); b.classList.add('good');
+      const dg = n === 2 ? '<div class="dg">' + Array.from({ length: 48 }, (_, i) => `<i style="animation-delay:${i * 35}ms"></i>`).join('') + '</div>' : '';
+      $('#fb').innerHTML = `<div class="msg ok"><b>${q.ok}</b><br>+1 نقطة 🌟</div>${dg}<p>${q.f}</p><button class="btn main" id="bBack">${n === 4 ? 'فتح الخزنة 🔐' : 'العودة إلى غرفة الأرشيف'}</button>`;
+      $('#bBack').onclick = closeM;
+    } else {
+      SFX.bad(); b.classList.add('wrong'); b.disabled = true;
+      $('#fb').innerHTML = '<div class="msg bad">ليست الإجابة الصحيحة، لا بأس! حاولي مرة أخرى 💪</div>';
+    }
+  });
+}
+
+/* ---------- الغرفة ثلاثية الأبعاد ---------- */
+let R, scene, cam, ren, cv, dp, fileBox, vaultLight, spark, sparkPos, ray, ndc, yaw = 0, pitch = 0, hov = null, vt = { on: false, t: 0 };
+const IT = {};
+const canv = (w, h, fn) => { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); };
+const mat = (c, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .8 }, o));
+function bx(g, w, h, d, c, x, y, z, o) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c, o)); m.position.set(x, y, z); g.add(m); return m; }
+function cy(g, r, h, c, x, y, z, rx, o) { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 24), mat(c, o)); m.position.set(x, y, z); if (rx) m.rotation.x = rx; g.add(m); return m; }
+function ring(g, r, t, c, x, y, z) { const m = new THREE.Mesh(new THREE.TorusGeometry(r, t, 8, 28), mat(c, { metalness: .5 })); m.position.set(x, y, z); g.add(m); return m; }
+function mk(id, x, y, z, ry) { const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry || 0; g.userData.id = id; scene.add(g); IT[id] = g; return g; }
+function plane(g, w, h, tex, x, y, z) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex, emissiveMap: tex, emissive: 0x000000 })); m.position.set(x, y, z); g.add(m); return m; }
+const GOLD = 0xd4af37, PI = Math.PI;
+
+function initScene() {
+  cv = $('#stage');
+  try { ren = new THREE.WebGLRenderer({ antialias: true }); } catch (e) { ren = null; }
+  if (!ren) { $('#itemList').hidden = false; $('#obj').textContent = 'تعذّر تشغيل العرض ثلاثي الأبعاد على هذا الجهاز؛ استخدمي قائمة العناصر 🔍'; R = true; return; }
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2)); cv.appendChild(ren.domElement);
+  scene = new THREE.Scene(); scene.background = new THREE.Color(0x070a16); scene.fog = new THREE.Fog(0x070a16, 6, 14);
+  cam = new THREE.PerspectiveCamera(65, 1, .1, 50); cam.position.set(0, 1.6, 0); cam.rotation.order = 'YXZ';
+  ray = new THREE.Raycaster(); ndc = new THREE.Vector2();
+  scene.add(new THREE.AmbientLight(0x6070a0, .55));
+  const walls = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 10), mat(0x1c2646, { side: THREE.BackSide })); walls.position.y = 2; scene.add(walls);
+  const wood = canv(256, 256, (c, w, h) => { c.fillStyle = '#4a3220'; c.fillRect(0, 0, w, h); for (let i = 0; i < 16; i++) { c.fillStyle = i % 2 ? '#3d2918' : '#55391f'; c.fillRect(0, i * 16, w, 14); } });
+  wood.wrapS = wood.wrapT = THREE.RepeatWrapping; wood.repeat.set(4, 4);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), mat(0xffffff, { map: wood })); fl.rotation.x = -PI / 2; scene.add(fl);
+  let L = new THREE.PointLight(0xffc766, .9, 9); L.position.set(0, 3.5, 0); scene.add(L);
+  L = new THREE.PointLight(0xffc766, 1.1, 5); L.position.set(3.5, 1.5, -2.2); scene.add(L);
+  L = new THREE.PointLight(0x7fa8ff, .6, 6); L.position.set(-1.8, 1.6, 3.2); scene.add(L);
+
+  /* رفوف وكتب على الجدار الخلفي */
+  for (let r = 0; r < 3; r++) {
+    bx(scene, 2.2, .06, .4, 0x4a2f1c, -2.4, .7 + r * .75, -4.7);
+    for (let i = 0; i < 9; i++) bx(scene, .14, .4 + Math.random() * .15, .28, [0x7a3b3b, 0x2f4a6b, 0x6b5a2f, 0x3b6b4f][i % 4], -3.3 + i * .21, .95 + r * .75, -4.7);
+  }
+  /* الطاولة + الكاسيت + المصباح */
+  bx(scene, 1.4, .08, 2.6, 0x5a3a22, 3.9, .8, -1.2);
+  [[-.6, -2.3], [.6, -2.3], [-.6, -.1], [.6, -.1]].forEach(p => bx(scene, .08, .8, .08, 0x3d2614, 3.9 + p[0], .4, p[1]));
+  let g = mk('cassette', 3.9, .84, -1.2, -PI / 2);
+  bx(g, .7, .18, .45, 0x2b2b2b, 0, .09, 0); cy(g, .09, .02, 0xcccccc, -.17, .19, .05); cy(g, .09, .02, 0xcccccc, .17, .19, .05); bx(g, .5, .03, .08, GOLD, 0, .19, .17, { metalness: .6 });
+  g = mk('lamp', 3.9, .84, -2.2, 0); cy(g, .12, .04, 0x222222, 0, .02, 0); cy(g, .02, .5, 0x444444, 0, .27, 0); cy(g, .13, .2, GOLD, 0, .55, 0, 0, { emissive: 0x805a10 });
+  /* رف البكرة */
+  bx(scene, .5, .06, 1.6, 0x4a2f1c, 4.2, 1.5, 1.5);
+  g = mk('reel', 4.1, 1.8, 1.5, -PI / 2);
+  cy(g, .26, .04, 0x1b1b1b, 0, 0, 0, PI / 2); cy(g, .2, .1, 0x6b4426, 0, 0, 0, PI / 2); ring(g, .14, .025, GOLD, 0, 0, .06);
+  /* الصورة */
+  const ptex = canv(256, 200, (c, w, h) => { const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#d9c8a0'); gr.addColorStop(1, '#8a7650'); c.fillStyle = gr; c.fillRect(0, 0, w, h); c.fillStyle = '#4a3c25'; c.fillRect(0, 140, w, 60); [60, 110, 160, 200].forEach((x, i) => { c.beginPath(); c.arc(x, 90 - i % 2 * 6, 16, 0, 7); c.fill(); c.fillRect(x - 15, 105 - i % 2 * 6, 30, 70); }); c.fillStyle = '#00000022'; c.fillRect(0, 0, w, h); });
+  g = mk('photo', -4.9, 1.9, -1, PI / 2); bx(g, 1, .8, .06, 0x6b4a2b, 0, 0, 0); plane(g, .86, .66, ptex, 0, 0, .035);
+  /* الحاسوب */
+  bx(scene, 2, .08, .9, 0x3d2b1d, -1.8, .78, 4.0); [[-.9, -.4], [.9, -.4], [-.9, .4], [.9, .4]].forEach(p => bx(scene, .08, .78, .08, 0x2a1d12, -1.8 + p[0], .39, 4 + p[1]));
+  const stex = canv(256, 160, (c, w, h) => { c.fillStyle = '#0c2b3a'; c.fillRect(0, 0, w, h); c.fillStyle = '#7fe0ff'; c.font = '16px monospace'; ['AV-1027.zip', 'photos/ 128 files', 'audio/ 64 files', 'film/ 12 files', 'scan: 100%'].forEach((t, i) => c.fillText(t, 14, 28 + i * 26)); });
+  g = mk('computer', -1.8, .82, 4.0, PI); bx(g, .8, .55, .08, 0x1e1e1e, 0, .55, 0); plane(g, .7, .45, stex, 0, .55, .045); bx(g, .1, .25, .1, 0x1e1e1e, 0, .15, 0); bx(g, .5, .03, .18, 0x2a2a2a, 0, .02, .35);
+  /* الخزانة */
+  g = mk('cabinet', -4.3, .9, 2.2, PI / 2); bx(g, 1.2, 1.8, .8, 0x39424e, 0, 0, 0, { metalness: .5 });
+  [-.55, 0, .55].forEach(y => { bx(g, 1.05, .5, .02, 0x4a5565, 0, y, .41, { metalness: .5 }); bx(g, .3, .05, .05, GOLD, 0, y, .44); });
+  /* الخزنة */
+  g = mk('safe', 0, 1.3, -4.3, 0); bx(g, 1.2, 1.2, .6, 0x2e3440, 0, 0, 0, { metalness: .6, roughness: .4 }); bx(g, .9, .9, .02, 0x120d05, 0, 0, .31);
+  fileBox = bx(g, .5, .3, .2, GOLD, 0, 0, .42, { emissive: 0x9a7410, metalness: .4 }); fileBox.visible = false;
+  dp = new THREE.Group(); dp.position.set(-.55, 0, .31); g.add(dp);
+  bx(dp, 1.1, 1.1, .08, 0x4a5160, .55, 0, 0, { metalness: .7, roughness: .35 }); ring(dp, .2, .03, GOLD, .55, 0, .06); bx(dp, .2, .1, .03, 0x2fbf71, .55, .38, .05, { emissive: 0x1a7a45 });
+  vaultLight = new THREE.PointLight(GOLD, 0, 4); vaultLight.position.set(0, 1.4, -3.4); scene.add(vaultLight);
+  /* الساعة واللوحة والأوراق */
+  g = mk('clock', 2.6, 2.7, -4.9, 0); cy(g, .3, .05, 0xf0e6c8, 0, 0, 0, PI / 2); ring(g, .3, .03, 0x5a3a22, 0, 0, 0); bx(g, .03, .2, .02, 0x111111, 0, .08, .04).rotation.z = .3; bx(g, .03, .14, .02, 0x111111, -.05, 0, .04).rotation.z = 1.6;
+  const btex = canv(256, 170, (c, w, h) => { c.fillStyle = '#12302f'; c.fillRect(0, 0, w, h); c.fillStyle = '#e8dcc0'; c.font = 'bold 56px monospace'; c.textAlign = 'center'; c.fillText('AV-1027', w / 2, 100); c.font = '20px monospace'; c.fillText('▮ ▯ ▮▮ ▯ ▮', w / 2, 140); });
+  g = mk('board', -2.8, 2.7, -4.92, 0); bx(g, 1.3, .9, .05, 0x5a3a22, 0, 0, 0); plane(g, 1.2, .8, btex, 0, 0, .03);
+  g = mk('papers', 1.4, .02, -2.2, 0.4); bx(g, .6, .012, .45, 0xe8dcc0, 0, 0, 0); bx(g, .5, .012, .4, 0xd8cba8, .2, .012, .1).rotation.y = .5;
+
+  Object.keys(IT).forEach(k => { IT[k].userData.mats = []; IT[k].traverse(o => { if (o.isMesh) IT[k].userData.mats.push(o.material); }); });
+  /* شرارات ذهبية فوق الهدف */
+  const gp = new THREE.BufferGeometry(); sparkPos = new Float32Array(90); gp.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+  spark = new THREE.Points(gp, new THREE.PointsMaterial({ color: 0xffd96a, size: .06, transparent: true, opacity: .9 })); spark.frustumCulled = false; scene.add(spark);
+
+  /* التحكم */
+  let d = null;
+  cv.addEventListener('pointerdown', e => { d = { sx: e.clientX, sy: e.clientY, lx: e.clientX, ly: e.clientY, m: false }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (d) { if (Math.hypot(e.clientX - d.sx, e.clientY - d.sy) > 6) d.m = true; if (d.m) { yaw += (e.clientX - d.lx) * .005; pitch = Math.max(-.7, Math.min(.7, pitch + (e.clientY - d.ly) * .005)); } d.lx = e.clientX; d.ly = e.clientY; }
+    else hover(e);
+  });
+  cv.addEventListener('pointerup', e => { if (d && !d.m && !vt.on) onItem(pick(e)); d = null; });
+  cv.addEventListener('wheel', e => { e.preventDefault(); cam.fov = Math.max(40, Math.min(80, cam.fov + e.deltaY * .03)); cam.updateProjectionMatrix(); }, { passive: false });
+  addEventListener('keydown', e => {
+    if (!inRoom || $('#modal').classList.contains('on')) return;
+    const k = e.key; if (k === 'ArrowLeft') yaw += .1; else if (k === 'ArrowRight') yaw -= .1; else if (k === 'ArrowUp') pitch = Math.max(-.7, pitch - .06); else if (k === 'ArrowDown') pitch = Math.min(.7, pitch + .06);
+  });
+  addEventListener('resize', resize); resize(); R = true; loop();
+}
+function resize() { if (!ren) return; const w = innerWidth, h = innerHeight; ren.setSize(w, h); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+function pick(e) {
+  const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam);
+  const h = ray.intersectObjects(scene.children, true);
+  for (const x of h) { if (x.object === spark) continue; let o = x.object; while (o && !(o.userData && o.userData.id)) o = o.parent; return o ? o.userData.id : null; }
+  return null;
+}
+function hover(e) {
+  const id = pick(e), tip = $('#tip'); hov = id; cv.style.cursor = id ? 'pointer' : 'grab';
+  if (id) { tip.hidden = false; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.textContent = I[id].s === S.stage ? 'افحصي هذا العنصر ✨' : I[id].n; } else tip.hidden = true;
+}
+function targetId() { return S.stage < 5 ? Q[S.stage].id : null; }
+let last = 0;
+function loop(t = 0) {
+  requestAnimationFrame(loop); if (!inRoom || !ren) return;
+  const dt = Math.min(.05, (t - last) / 1000); last = t, tg = targetId();
+  if (vt.on) {
+    vt.t = Math.min(1, vt.t + dt * .35); const e = vt.t * vt.t * (3 - 2 * vt.t);
+    dp.rotation.y = -1.9 * e; fileBox.visible = vt.t > .35; vaultLight.intensity = e * 2.2;
+    yaw += (0 - yaw) * .06; pitch += (0 - pitch) * .06;
+  }
+  cam.rotation.set(pitch, yaw, 0);
+  const s = .22 + .18 * Math.sin(t / 300);
+  for (const k in IT) IT[k].userData.mats.forEach(m => {
+    if (!m.emissive) return;
+    if (k === tg) m.emissive.setHex(0xaa8420).multiplyScalar(s * 2);
+    else if (k === hov) m.emissive.setHex(0x554010);
+    else if (m.userData.base !== undefined) m.emissive.setHex(m.userData.base); else if (!m.map) m.emissive.setHex(S.found.includes(k) && I[k].s !== undefined ? 0x0e3a22 : 0x000000);
+  });
+  /* الشرارات */
+  if (tg && IT[tg]) { const p = IT[tg].position; for (let i = 0; i < 30; i++) { sparkPos[i * 3] = p.x + Math.sin(t / 700 + i * 2.1) * .35; sparkPos[i * 3 + 1] = p.y + .1 + ((t / 1200 + i * .37) % 1) * .7; sparkPos[i * 3 + 2] = p.z + Math.cos(t / 800 + i * 1.7) * .35; } spark.visible = true; spark.geometry.attributes.position.needsUpdate = true; } else spark.visible = false;
+  ren.render(scene, cam);
+}
+let tg = null;
+
+/* ---------- فتح الخزنة والفوز ---------- */
+function vault() {
+  vaultPlayed = true; SFX.vault(); yaw = Math.atan2(Math.sin(yaw), Math.cos(yaw)); vt = { on: true, t: 0 };
+  if (!ren) return setTimeout(showWin, 800);
+  setTimeout(showWin, 3400);
+}
+function showWin() {
+  show('win'); SFX.win(); confetti();
+  $('#win').innerHTML = `<h1>تم استعادة الأرشيف بنجاح! 🎉</h1><h2 class="gold">أصبحتِ حارسة التراث الرقمي</h2><p style="font-size:1.4rem">النتيجة النهائية: <b class="gold">${S.pts}/5</b></p>
+  <div class="file"><b>📁 اسم الملف:</b> ملف الذكريات — AV-1027<br><b>المحتويات:</b> صور تاريخية، تسجيلات صوتية، وأفلام.<br><b>الحالة:</b> <span style="color:#7fd6a0">مستعاد وآمن ✅</span></div>
+  <p>اكتملت جميع المراحل الخمس! تعلمتِ عن الأشرطة الصوتية والصور والرقمنة والأرشيف ويوم 27 أكتوبر.</p>
+  <p class="edu">«إن حفظ التراث السمعي البصري ورقمنته يساعدان على حماية الصور والتسجيلات والأفلام التاريخية من التلف والضياع، ويتيحان للأجيال القادمة فرصة التعرف على الماضي وذاكرة المجتمعات.»</p>
+  <div class="btns"><button class="btn main" id="bAgain">العبِي مرة أخرى</button><button class="btn" id="bToHome">العودة إلى الصفحة الرئيسية</button></div>`;
+  $('#bAgain').onclick = () => { resetAll(); enterRoom(); };
+  $('#bToHome').onclick = () => show('home');
+}
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  for (let i = 0; i < 50; i++) { const s = document.createElement('span'); s.className = 'c'; s.style.cssText = `left:${Math.random() * 100}vw;background:${['#d4af37', '#f0d77a', '#7fe0ff', '#e8dcc0'][i % 4]};animation-duration:${2 + Math.random() * 2.5}s;animation-delay:${Math.random()}s`; document.body.appendChild(s); setTimeout(() => s.remove(), 6000); }
+}
+function resetAll() {
+  S = { stage: 0, pts: 0, found: [], story: true }; save(); vaultPlayed = false; vt = { on: false, t: 0 };
+  if (dp) { dp.rotation.y = 0; fileBox.visible = false; vaultLight.intensity = 0; yaw = 0; pitch = 0; }
+  hud();
+}
+function enterRoom() { show('game'); if (!R) initScene(); hud(); }
+
+/* ---------- الأزرار ---------- */
+$('#bStart').onclick = () => { SFX.click(); if (S.stage >= 5) { vaultPlayed = true; showWin(); } else if (!S.story) show('story'); else enterRoom(); };
+$('#bEnter').onclick = () => { S.story = true; save(); enterRoom(); };
+$('#bHelp').onclick = () => modal(`<h3>كيف تلعبين؟</h3><ol><li>ابدئي المهمة واقرئي القصة.</li><li>استكشفي غرفة الأرشيف ثلاثية الأبعاد (اسحبي للنظر حولك).</li><li>ابحثي عن الأشياء المهمة واضغطي عليها.</li><li>اقرئي الأدلة والمعلومات التي تظهر لكِ.</li><li>أجيبي عن الألغاز الخمسة بالترتيب.</li><li>استخدمي التلميحات إذا واجهتِ صعوبة.</li><li>بعد كل مرحلة، عودي إلى الغرفة وابحثي عن الدليل التالي.</li><li>أكملي جميع المراحل لاستعادة الملف المفقود.</li></ol><h3>كيف تفوزين؟</h3><p>«احصلي على نقطة لكل إجابة صحيحة، وأكملي المراحل الخمس للحصول على الدرجة الكاملة ولقب حارسة التراث الرقمي.»</p>`);
+$('#bAbout').onclick = () => modal(`<h3>اليوم العالمي للتراث السمعي البصري 🎞️</h3><p>يُحتفى به كل عام في <b>27 أكتوبر</b> للتعريف بأهمية حفظ الأفلام والتسجيلات الصوتية والصور والمواد السمعية البصرية.</p><p>هذه المواد تحفظ أصواتنا وحكاياتنا وملامح مجتمعاتنا، لكنها هشة وقد تتلف مع الزمن.</p><p>ويساعد الحفظ والترميم والرقمنة على حماية الذاكرة التاريخية والثقافية، وإتاحتها للأجيال القادمة.</p>`);
+$('#bClose').onclick = closeM;
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeM(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && $('#modal').classList.contains('on')) closeM(); });
+$('#bItems').onclick = () => { const l = $('#itemList'); l.hidden = !l.hidden; };
+$('#bMute').onclick = () => { mute = !mute; $('#bMute').textContent = mute ? '🔇' : '🔊'; };
+$('#bHome').onclick = () => show('home');
+$('#bReset').onclick = () => { if (confirm('هل تريدين إعادة اللعبة من البداية؟')) { resetAll(); } };
+
+</script>
+</body>
+</html>
